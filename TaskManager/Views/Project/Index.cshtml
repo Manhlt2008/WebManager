@@ -1,0 +1,154 @@
+﻿@using TaskManager.Utils
+@model TaskManager.Models.ProjectSearchModel
+@{
+    ViewBag.Title = "Project manager";
+}
+
+@section breadcrumb
+{
+    <li>@Html.ActionLink("Project manager", "Index", "Project")</li>
+}
+<div class="box box-primary">
+    <div class="box-header">
+        <h3 class="box-title">Search</h3>
+    </div>
+    @using (Html.BeginForm())
+    {
+        <div class="box-body">
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.Name)
+                    @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+                </div>
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.StartDate)
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        @Html.TextBoxFor(m => m.StartDate, new { @class = "form-control"})
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.EndDate)
+                    <div class="input-group">
+                        <div class="input-group-addon">
+                            <i class="fa fa-calendar"></i>
+                        </div>
+                        @Html.TextBoxFor(m => m.EndDate, new { @class = "form-control" })
+                    </div>
+                </div>
+                @*<div class="col-md-4">
+                    @Html.LabelFor(m => m.Leader)
+                    @Html.DropDownListFor(m => m.Leader, new SelectList(ViewBag.Departments, "Id", "Name"), new { @class = "form-control" })
+                </div>*@
+
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="box-footer">
+            <button type="submit" class="btn btn-primary pull-right">Search</button>
+            <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+    }
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">List of Projects</h3>
+            </div>
+                
+            <!-- /.box-header -->
+            <div class="box-body table-responsive">
+                @if (Helper.CurrentUser.IsManager)
+                {
+                    <a href="@Url.Action("Create")" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add new</a>
+                }
+                
+                <table id="example2" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th style="width: 100px">
+                                Project Name
+                            </th>
+                            <th>
+                                Description
+                            </th>
+                            <th>
+                                Start date
+                            </th>
+                            <th>
+                                End date
+                            </th>
+                            <th style="width: 100px">
+                                Created Date
+                            </th>
+                            @*<th>
+                                Leader of task
+                            </th>*@
+                            <th style="width: 100px">Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Projects)
+                        {
+                            <tr>
+                                <td>
+                                    @item.Name
+                                </td>
+                                <td>
+                                    @item.Description
+                                </td>
+                                <td>
+                                    @item.StartDate.ToString(Helper.FormatDate)
+                                </td>
+                                <td>
+                                    @item.EndDate.ToString(Helper.FormatDate)
+                                </td>
+                                <td>
+                                    @item.CreatedDate
+                                </td>
+                                @*<td>
+                                    @item.User.UserName - @item.User.FullName
+                                </td>*@
+                                <td>
+                                     @if (Helper.CurrentUser.IsManager)
+                                     {
+                                         <a class="btn btn-default btn-flat" href="@Url.Action("Edit", new {id = item.Id})"><i class="fa fa-edit"></i></a>
+                                         <a class="btn btn-default btn-flat" href="@Url.Action("Delete", new {id = item.Id})"><i class="fa fa-remove"></i></a>
+                                     }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+</div>
+
+@section Script
+{
+    <script type="text/javascript">
+        $(function () {
+            $('#example2').dataTable({
+                "bPaginate": true,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": true,
+                "bAutoWidth": false,
+                "aLengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Tất cả"]],
+                "iDisplayLength": 25,
+            });
+            $('#StartDate').datepicker();
+            $('#EndDate').datepicker();
+        });
+
+</script>    
+}

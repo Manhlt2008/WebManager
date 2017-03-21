@@ -1,0 +1,31 @@
+﻿@{
+    ViewBag.Title = "Assign task";
+    var subTaskId = ViewBag.SubTask.Id.ToString();
+}
+@section breadcrumb
+{
+    
+}
+<div class="box box-primary">
+    <div class="box-header">
+        <h3 class="box-title">Assign task</h3>
+    </div>
+    <!-- /.box-header -->
+    <!-- form start -->
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        <div class="box-body">
+            <div class="form-group">
+                    <label for="userId">Employee</label>
+                    @Html.Hidden("subtaskId", (string)subTaskId)
+                    @Html.DropDownList("userId",  new SelectList(ViewBag.Users, "Id", "FullName", ViewBag.SubTask.UserId),new { @class = "form-control" })
+            </div>
+        </div>
+        <!-- /.box-body -->
+        <div class="box-footer">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="@Url.Action("Index", new {id = ViewBag.Task.Id})" class="btn btn-primary">Cancel</a>
+        </div>
+    }
+</div>

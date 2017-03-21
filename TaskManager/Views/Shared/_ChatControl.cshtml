@@ -1,0 +1,269 @@
+﻿@using TaskManager.Utils
+<script type="text/javascript" src="/scripts/Chats/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="/scripts/jquery.cookie.js"></script>
+<link rel="stylesheet" href="/Content/Chats/emoticon.css" />
+<link rel="stylesheet" href="/Content/Chats/chat-admin-style.css" />
+<script type="text/javascript" src="/scripts/jquery.signalR-2.1.2.min.js"></script>
+<script type="text/javascript" src="/signalr/hubs"></script>
+<script type="text/javascript" src="/scripts/Chats/jquery.emoticon.js"></script>
+<script type="text/javascript" src="/scripts/Chats/bdschat.js"></script>
+<script type="text/javascript" src="/scripts/Chats/chatPopup.js"></script>
+
+
+<script id="new-online-contacts" type="text/x-jquery-tmpl">
+    <div>
+        <ul>
+            {{each users}}
+            <li id="chatLink-${UserId}"><a href="javascript:;" onclick="javascript:BDSChat.initiateChat('${UserId}','0');">${FullName}</a></li>
+            {{/each}}
+        </ul>
+    </div>
+</script>
+<script id="new-chatroom-template" type="text/x-jquery-tmpl">
+    <div id="chatRoom-${chatRoomId}" class="chatRoom">
+        <div id="messages-${chatRoomId}" class="chatMessages">
+        </div>
+        <div class="clear"></div>
+        <form id="sendmessage-${chatRoomId}" action="#">
+            <div class="sendmessage-container">
+                <div class="chat-command">
+                    <div class="text-newmessage">
+                        <textarea type="text" id="newmessage-${chatRoomId}" class="chatNewMessage" placeholder="Nhập nội dung và nhấn &quot;enter&quot; để chat" onkeyup="autoResizeTextArea(this)" onkeydown="return chatTextEnter(this, event);"></textarea>
+                        <input type="button" id="chatsend-${chatRoomId}" value="Send" class="chatSend" onclick="javascript: BDSChat.sendChatMessage('${chatRoomId}')" />
+                    </div>
+                    <div class="div-emoticon">
+                        <span id="pnlEmoticions-${chatRoomId}" class="emoticon-0100-smile emoticon-avatar" rel=":)"></span>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div class="clear"></div>
+    </div>
+</script>
+<script id="new-chat-header" type="text/x-jquery-tmpl">
+    <div id="chatRoomHeader-${chatRoomId}">
+        {{each chatUsers}}
+        {{if !BDSChat.isCurrentUser(UserId)}}
+            <span class="user-status"></span>{{html BDSChat.formatName(FullName, 30)}}
+            <span class="unread-count"></span>
+            {{/if}}
+        {{/each}}
+    </div>
+</script>
+
+<script id="new-message-template-left" type="text/x-jquery-tmpl">
+    <div class="message" id="m-${chatMessageId}">
+        <div class="left">
+            <a class="avatar" href="#">
+                <img src="" alt="" /></a>
+            <div class="msg-text-item">
+                <div class="bounds">
+                    <div class="text-message">
+                        <span>{{html messageText}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</script>
+<script id="new-message-template-right" type="text/x-jquery-tmpl">
+    <div class="message" id="m-${chatMessageId}">
+        <div class="right">
+            <div class="msg-text-item">
+                <div class="bounds">
+                    <div class="text-message">
+                        <span>{{html messageText}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</script>
+<script id="new-notify-message-template" type="text/x-jquery-tmpl">
+    <div class="message" id="m-${chatMessageId}">
+        <strong>{{html messageText}}</strong>
+    </div>
+</script>
+<script id="new-message-template" type="text/x-jquery-tmpl">
+    <div>
+        {{html messageText}}
+    </div>
+</script>
+
+<script id="chat-popup-template" type="text/x-jquery-tmpl">
+    <div class="chatPopup" id="chatPopup-${id}" roomid="${id}" fullname="${fullName}">
+    </div>
+</script>
+
+<script id="chat-popup-header-template" type="text/x-jquery-tmpl">
+    <div class="chatPopup-header">
+        <span class="header-title"></span>
+        <div class="header-icon">
+            <a href="javascript:void(0)" class="header-icon-close" title="Đóng"><i class="fa fa-close"></i></a>
+            @*<a href="javascript:void(0)" class="header-icon-setting"><span></span></a>*@
+            <a href="javascript:void(0)" class="header-icon-minimize" title="Thu nhỏ"><i class="fa fa-minus"></i></a>
+        </div>
+        <div class="clear"></div>
+    </div>
+</script>
+<script id="chat-collapse-room-template" type="text/x-jquery-tmpl">
+    <div class="collapse-chat-room">
+		<div class="collapse-chat-room-relative">
+			<a href="javascript:void(0)" class="link-collapse-room">
+				<span class="link-collapse-room-icon"></span>
+				<span class="link-collapse-room-number">2</span>
+			</a>
+			<div class="collapse-room">
+				<ul class="collapse-room-list">
+				</ul>
+			</div>
+		</div>
+	</div>
+</script>
+<script id="chat-collapse-room-item-template" type="text/x-jquery-tmpl">
+    <li class="collapse-room-item" id="collapse-room-item-${roomId}" roomId ="${roomId}">
+		<a href="javascript:void(0)">
+			<div>
+				<label class="collapse-room-item-close" roomId ="${roomId}"></label>
+				<div class="collapse-room-item-content">
+					<span class="user-status"></span>
+					<span>${fullName}</span>
+					<span class="unread-count"></span>
+				</div>
+			</div>
+		</a>
+	</li>
+</script>
+<script id="chat-container-template" type="text/x-jquery-tmpl">
+    <div class="list-chat-room">
+        <div class="chat-header-bds chat-with-bds">
+            <a class="link-chat-bds" href="javascript:void(0)">
+                <span class="link-chat-bds-header"></span>
+                <span class="link-chat-bds-content">Chat với <b>Batdongsan.com.vn</b></span>
+            </a>
+        </div>
+    </div>
+</script>
+<script id="chat-list-user" type="text/x-jquery-tmpl">
+    <li class="${OnlineStatus}" userId="${UserId}">
+        <a href="javascript:void(0)" onclick="BDSChat.initiateChat('${UserId}')">
+            <div class="user-item-avatar">
+                <img src="${Avatar}" />
+            </div>
+            <div class="user-item-status"><i></i></div>
+            <div class="user-item-name">${FullName}</div>
+        </a>
+    </li>
+</script>
+<script id="quick-inbox-container-template" type="text/x-jquery-tmpl">
+    <ul class="dropdown-menu">
+        <li class="header">Bạn có ${TotalCount} tin nhắn mới</li>
+        <li>
+            <!-- inner menu: contains the actual data -->
+            <ul class="menu">
+                
+            </ul>
+        </li>
+        @*<li class="footer"><a href="#">Hiển thị tất cả</a></li>*@
+    </ul>
+</script>
+<script id="quick-inbox-item-template" type="text/x-jquery-tmpl">
+    <li>
+        <!-- start message -->
+        <a href="javascript:void(0)" onclick="BDSChat.initiateChat('${UserId}')">
+            <div class="pull-left">
+                <img src="${Avatar}" class="img-circle" alt="User Image" />
+            </div>
+            <h4 style="position: relative">${FullName}
+                <small style="position: absolute;top: 4px;right: 10px;"><i class="fa fa-clock-o"></i> ${Time}</small>
+            </h4>
+            <p style="text-overflow: ellipsis;overflow: hidden;">${Message}</p>
+        </a>
+        <!-- end message -->
+    </li>
+</script>
+<div class="list-user-container">
+    <div class="chatPopup-header">
+        <span class="header-title">
+            <span title="" style="font-size: 12px;">List of employees</span>
+        </span>
+        @*<div class="header-icon">
+            <a href="javascript:void(0)" class="header-icon-close"><i class="fa fa-close"></i></a>
+        </div>*@
+    </div>
+    <div class="list-user-border hide">
+        <div class="list-user">
+            <ul>
+            </ul>
+        </div>
+        <div class="clear"></div>
+        <div class="list-user-search">
+            <div class="list-user-search-content">
+                <i class="icon-search"></i>
+                <button class="list-user-search-delete" title="Xóa" onclick="deleteTextSearch()">Xóa</button>
+                <div class="list-user-search-input">
+                    <input type="text" placeholder="Tìm kiếm"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    chatServerUrl = '';
+    senderId = '@EncryptUtils.EncryptObject(Helper.CurrentUser.Id)';
+    senderName = '@Helper.CurrentUser.FullName';
+    BDSChat.setIsAdmin(true);
+    BDSChat.attachEvents();
+
+    $(".list-user-search-input input").keyup(function() {
+        searchUsers();
+    });
+
+    $(".list-user-container .chatPopup-header").click(function() {
+        if($(".list-user-border").hasClass("hide")) {
+            $(".list-user-border").removeClass("hide");
+        }else {
+            $(".list-user-border").addClass("hide");
+        }
+    });
+
+    function deleteTextSearch() {
+        $(".list-user-search-input input").val("");
+        var deleteButton = $(".list-user-search-delete");
+        var liUsers = $(".list-user li");
+        deleteButton.hide();
+        if (liUsers.length > 0) {
+            liUsers.show();
+        }
+    }
+
+    function searchUsers() {
+        var keyword = $(".list-user-search-input input").val();
+        var deleteButton = $(".list-user-search-delete");
+        var liUsers = $(".list-user li");
+        if (keyword == '' || keyword.trim() == '') {
+            deleteButton.hide();
+            if (liUsers.length > 0) {
+                liUsers.show();
+            }
+        } else {
+            deleteButton.show();
+            keyword = keyword.trim().toLowerCase();
+            if (liUsers.length > 0) {
+                for (var i = 0; i < liUsers.length; i++) {
+                    var text = $(liUsers[i]).find(".user-item-name").text().toLowerCase();
+                    if (text.indexOf(keyword) > -1) {
+                        $(liUsers[i]).show();
+                    } else {
+                        $(liUsers[i]).hide();
+                    }
+                }
+            }
+        }
+    }
+</script>
+<script src="/Scripts/Chats/chatCommon.js"></script>

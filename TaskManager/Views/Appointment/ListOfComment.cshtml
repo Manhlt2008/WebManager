@@ -1,0 +1,102 @@
+﻿@using TaskManager.Utils
+@model List<Entity.AppointmentComment>
+@{
+    Layout = null;
+    ViewBag.Title = "List Of Comments";
+}
+<meta charset="UTF-8">
+    <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+    <link href="/Content/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/Content/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <!-- Ionicons -->
+    <!-- Morris chart -->
+    @*<link href="/Content/css/morris/morris.css" rel="stylesheet" type="text/css" />*@
+    <!-- jvectormap -->
+    <link href="/Content/css/jvectormap/jquery-jvectormap-1.2.2.css" rel="stylesheet" type="text/css" />
+    <!-- Date Picker -->
+    <link href="/Content/css/datepicker/datepicker3.css" rel="stylesheet" type="text/css" />
+    <!-- Daterange picker -->
+    <link href="/Content/css/daterangepicker/daterangepicker-bs3.css" rel="stylesheet" type="text/css" />
+    <!-- bootstrap wysihtml5 - text editor -->
+    <link href="/Content/css/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css" rel="stylesheet" type="text/css" />
+    
+    <!-- bootstrap data table -->
+    <link href="/content/css/datatables/dataTables.bootstrap.css" rel="stylesheet" type="text/css" />
+
+    <!-- Theme style -->
+    <link href="/Content/css/AdminLTE.css" rel="stylesheet" type="text/css" />
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">List of Rejecters</h3>
+            </div>
+
+            <!-- /.box-header -->
+            <div class="box-body table-responsive">
+                <table id="example2" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Full Name
+                            </th>
+                            <th>Reason
+                            </th>
+                            <th>Create date
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @item.User.FullName
+                                </td>
+                                <td>
+                                    @item.Comments
+                                </td>
+                                @{
+                            var createDate = item.CreateDate == null ? string.Empty : ((DateTime)item.CreateDate).ToString(Helper.FormatDate);
+                                }
+                                <td>@createDate</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+</div>
+
+<script src="/Content/js/jquery.min.js"></script>
+    <script src="/Content/js/bootstrap.min.js" type="text/javascript"></script>
+    <!-- daterangepicker -->
+    <script src="/Content/js/plugins/daterangepicker/daterangepicker.js" type="text/javascript"></script>
+    <!-- datepicker -->
+    <script src="/Content/js/plugins/datepicker/bootstrap-datepicker.js" type="text/javascript"></script>
+    <!-- Bootstrap WYSIHTML5 -->
+    <script src="/Content/js/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js" type="text/javascript"></script>
+    <!-- iCheck -->
+    <!-- <script src="js/plugins/iCheck/icheck.min.js" type="text/javascript"></script> -->
+   
+    <script src="/Content/js/plugins/datatables/jquery.dataTables.js" type="text/javascript"></script>
+    <script src="/Content/js/plugins/datatables/dataTables.bootstrap.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+    $(function () {
+        $('#example2').dataTable({
+            "bPaginate": true,
+            "bLengthChange": false,
+            "bFilter": false,
+            "bSort": false,
+            "bInfo": true,
+            "bAutoWidth": false,
+            "aLengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Tất cả"]],
+            "iDisplayLength": 25,
+        });
+    });
+</script>
+
+

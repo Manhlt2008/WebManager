@@ -1,0 +1,157 @@
+﻿@model TaskManager.Models.UserSearchModel
+@{
+    ViewBag.Title = "User Manager";
+}
+@section breadcrumb
+{
+    <li>@Html.ActionLink("User Manager", "Index", "User")</li>
+}
+
+<div class="box box-primary">
+    <div class="box-header">
+        <h3 class="box-title">Search</h3>
+    </div>
+    @using (Html.BeginForm())
+    {
+        <div class="box-body">
+            <div class="form-group">
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.UserName)
+                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control" })
+                </div>
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.FullName)
+                    @Html.TextBoxFor(m => m.FullName, new { @class = "form-control" })
+                </div>
+                <div class="col-md-4">
+                    @Html.LabelFor(m => m.DepartmentId)
+                    @Html.DropDownListFor(m => m.DepartmentId, new SelectList(ViewBag.Departments, "Id", "Name"), new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="clear"></div>
+        </div>
+        <div class="box-footer">
+            <button type="submit" class="btn btn-primary pull-right">Search</button>
+            <div class="clear"></div>
+        </div>
+        <div class="clear"></div>
+    }
+</div>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">List of Users</h3>
+            </div>
+                
+            <!-- /.box-header -->
+            <div class="box-body table-responsive">
+                <a href="@Url.Action("Create")" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add User</a>
+                <table id="example2" class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>
+                                User Name
+                            </th>
+                            <th>
+                                First Name
+                            </th>
+                            <th>
+                                Last Name
+                            </th>
+                            <th>
+                                Address
+                            </th>
+                            <th>
+                                Department
+                            </th>
+                            <th>
+                                Email
+                            </th>
+                            <th>
+                                Position
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th>
+                                Created Date
+                            </th>
+                            <th style="width: 150px">Action
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Users)
+                        {
+                            <tr>
+                                <td>
+                                    @item.UserName
+                                </td>
+                                <td>
+                                    @item.LastName
+                                </td>
+                                <td>
+                                    @item.FirstName
+                                </td>
+                                <td>
+                                    @item.Address
+                                </td>
+                                <td>
+                                    @item.DepartmentName
+                                </td>
+                                <td>
+                                    @item.Email
+                                </td>
+                                <td>
+                                    @item.Mission
+                                </td>
+                                <td>
+                                    @{
+                                        if (item.IsActive)
+                                        {
+                                            <label class="label label-success">Active</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="label label-danger">Block</label>
+                                        }
+                                    }
+                                </td>
+                                <td>
+                                    @item.CreatedDate
+                                </td>
+                                <td>
+                                    @*@Html.ActionLink("Sửa", "Edit", new {id = item.Id}, new {@class ="btn btn-default btn-flat"}) 
+                                    @Html.ActionLink("Xóa", "Delete", new {id = item.Id}, new {@class ="btn btn-default btn-flat"})*@
+                                    <a class="btn btn-default btn-flat" href="@Url.Action("Edit", new {id = item.Id})"><i class="fa fa-edit"></i></a>
+                                    <a class="btn btn-default btn-flat" href="@Url.Action("Delete", new {userId = item.Id})"><i class="fa fa-remove"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+</div>
+
+@section Script
+{
+    <script type="text/javascript">
+        $(function () {
+            $('#example2').dataTable({
+                "bPaginate": true,
+                "bLengthChange": false,
+                "bFilter": false,
+                "bSort": false,
+                "bInfo": true,
+                "bAutoWidth": false,
+                "aLengthMenu": [[10, 25, 50, -1], [10, 25, 50, "Tất cả"]],
+                "iDisplayLength": 25,
+            });
+        });
+    </script>
+}

@@ -1,0 +1,139 @@
+﻿@model TaskManager.Models.UserModel
+@{
+    ViewBag.Title = "Add User";
+    var isEdit = (Model != null && Model.Id > 0);
+}
+
+@section breadcrumb
+{
+    <li>@Html.ActionLink("User Manager", "Index", "User")</li>
+    @if (isEdit)
+    {
+        <li>@Html.ActionLink("Edit User", "Edit", "User")</li>
+    }
+    else
+    {
+        <li>@Html.ActionLink("Add Usser", "Create", "User")</li>
+    }
+    
+}
+
+<div class="box box-primary">
+    <div class="box-header">
+        
+        @if (isEdit)
+        {
+            <h3 class="box-title">Change Infomation User</h3>
+        }
+        else
+        {
+            <h3 class="box-title">Add User</h3>         
+        }
+    </div>
+    <!-- /.box-header -->
+    <!-- form start -->
+
+    @using (Html.BeginForm(isEdit ? "Edit" : "Create"))
+    {
+        @Html.AntiForgeryToken()
+        <div class="box-body">
+            <div class="form-group">
+                <div class="col-md-6">
+                    @Html.HiddenFor(m=>m.Id)
+                    @Html.LabelFor(m => m.UserName)
+                    
+                    @if (isEdit)
+                    {
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control",  disabled="disabled" })
+                    }
+                    else
+                    {
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "form-control"})
+                    }
+                </div>
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.Password)
+                    
+                    @if (isEdit)
+                    {
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", disabled="disabled" })
+                    }
+                    else
+                    {
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.FirstName)
+                    @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+                </div>
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.LastName)
+                    @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group padding-10">
+                @Html.LabelFor(m => m.Address)
+                @Html.TextAreaFor(m => m.Address, new { @class = "form-control" })
+            </div>
+            <div class="form-group">
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.DepartmentId)
+                    @Html.DropDownListFor(m => m.DepartmentId, new SelectList(ViewBag.Department, "Id", "Name"), new { @class = "form-control" })
+                </div>
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.DateOfBirth)
+                    <div class="input-group">
+                    <div class="input-group-addon">
+                        <i class="fa fa-calendar"></i>
+                    </div>
+                    @Html.TextBoxFor(m => m.DateOfBirth, new { @class = "form-control" })
+                    </div><!-- /.input group -->
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.Email)
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                </div>
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.Mission)
+                    @Html.TextBoxFor(m => m.Mission, new { @class = "form-control" })
+                </div>
+            </div>
+            <div class="form-group padding-10">
+                @Html.RadioButtonFor(m => m.Gender, true, new { id = "radio_gender_True", @class = "form-control" }) Male &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                @Html.RadioButtonFor(m => m.Gender, false, new { id = "radio_gender_False", @class = "form-control" }) Female
+            </div>
+            <div class="form-group padding-10">
+                @Html.CheckBoxFor(m => m.IsAdmin, new { id = "radio_gender_True", @class = "form-control" }) Admin
+            </div>
+            <div class="form-group padding-10">
+                @Html.CheckBoxFor(m => m.IsManager, new { id = "radio_gender_True", @class = "form-control" }) Manager
+            </div>
+            <div class="form-group padding-10">
+                @Html.RadioButtonFor(m => m.IsActive, true, new { id = "radio_isactive_True", @class = "form-control" })Active &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                @Html.RadioButtonFor(m => m.IsActive, false, new { id = "radio_isactive_False", @class = "form-control" }) Block
+            </div>
+            @Html.ValidationSummary(true)
+        </div>
+        <div class="clear"></div>
+        <!-- /.box-body -->
+        <div class="box-footer">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="@Url.Action("Index")" class="btn btn-primary">Cancel</a>
+        </div>
+    }
+</div>
+@section Script
+{
+    <script type="text/javascript">
+    $(function () {
+        //Datetime mask
+        $("#DateOfBirth").inputmask("dd/mm/yyyy", { "placeholder": "dd/mm/yyyy" });
+    });
+</script>    
+}
+

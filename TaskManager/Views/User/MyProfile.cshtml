@@ -1,0 +1,105 @@
+﻿@using TaskManager.Utils
+@{
+    ViewBag.Title = "My Profile";
+    var user = Helper.CurrentUser;
+}
+@section breadcrumb
+{
+    <li>@Html.ActionLink("My Profile", "MyProfile", "User")</li>
+}
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box">
+            <div class="box-header">
+                <h3 class="box-title">MyProfile</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body table-responsive">
+                <table id="example2" class="table table-bordered table-hover">
+                        <tr>
+                            <th>
+                                User Name
+                            </th>
+                            <th>
+                                First Name
+                            </th>
+                            <th>
+                                Last Name
+                            </th>
+                            <th>
+                                Address
+                            </th>
+                            <th>
+                                Date Of Birth
+                            </th>
+                            <th>
+                                Gender
+                            </th>
+                            <th>
+                                Department
+                            </th>
+                            <th>
+                                Emai
+                            </th>
+                            <th>
+                                Position
+                            </th>
+                            @*<th>
+                                Ảnh đại diện
+                            </th>*@
+                        </tr>
+                        <tr>
+                            <td>
+                                @user.UserName
+                            </td>
+                            <td>
+                                @user.LastName
+                            </td>
+                            <td>
+                                @user.FirstName
+                            </td>
+                            <td>
+                                @user.Address
+                            </td>
+                            <td>
+                                @{
+                                    if (user.DateOfBirth.ToString("dd/MM/yyyy") != "01/01/1900")
+                                    {
+                                        <span>
+                                            @user.DateOfBirth.ToString("dd/MM/yyyy")            
+                                        </span>
+                                    }
+                                }
+                                
+                            </td>
+                            @if(user.Gender)
+                            {
+                                <td>Male</td>
+                            }
+                            else
+                            {
+                                <td>Female</td>
+                            }
+
+                            <td>
+                                @user.Department.Name
+                            </td>
+                            <td>
+                                @user.Email
+                            </td>
+                            <td>
+                                @user.Mission
+                            </td>
+                            @*<td>
+                                @user.Avatar
+                            </td>*@
+                        </tr>
+                        
+                </table>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+</div>
+
